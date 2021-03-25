@@ -10,6 +10,7 @@ import Foundation
 class MovieViewModel {
     let request = MovieRequest()
     var listOfMovies = [MovieDetail]()
+    let segmentedItems = ["Popular", "Upcoming", "Top Rated", "Now Playing"]
     
     func getData (completion: @escaping(Result<[MovieDetail], MovieError>) -> Void)
     {
@@ -21,17 +22,13 @@ class MovieViewModel {
                 completion(.failure(.noDataAvailable))
                 return
             }
-            //print("jsondata =", String(decoding: jsonData, as: UTF8.self))
             do
             {
                 let decoder = JSONDecoder()
-                //print("decoder berhasil")
                 let movieResponse = try decoder.decode(MovieResponse.self, from: jsonData)
-                //print("movieResponse berhasil")
                 DispatchQueue.main.async
                 {
                     let movieDetails = movieResponse.results
-                    //print("movieDetails berhasil")
                     completion(.success(movieDetails))
                     print("completion berhasil")
                 }

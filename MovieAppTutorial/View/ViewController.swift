@@ -12,12 +12,19 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     let tableView = UITableView()
     let viewModel = MovieViewModel()
+    let segmentedControl: UISegmentedControl = {
+        let items = MovieViewModel().segmentedItems
+        let segmentedControl = UISegmentedControl(items: items)
+        return segmentedControl
+    }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    override func loadView() {
+        super.loadView()
         setupTableView()
+        setupSegmentedControl()
+        settingConstraint()
+        setupStackView()
         fetchData()
-        // Do any additional setup after loading the view.
     }
 
     func fetchData()
@@ -33,7 +40,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
                 {
                     self?.viewModel.listOfMovies = movies
                     print("Total Movie List =", self?.viewModel.listOfMovies.count ?? 0)
-                    //print("Movie List =", self!.listOfMovies)
                             
                     self?.tableView.delegate = self
                     self?.tableView.dataSource = self
@@ -43,17 +49,59 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
 
+    func settingConstraint() {
+        let frame = UIScreen.main.bounds
+        
+        segmentedControl.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.leftAnchor, bottom: nil, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: frame.width - 20, height: frame.height*0.05, enableInsets: false)
+        
+        tableView.anchor(top: segmentedControl.topAnchor, left: view.leftAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 0, paddingLeft: 0, paddingBottom: 0, paddingRight: 0, width: view.frame.width, height: view.frame.height, enableInsets: false)
+    }
+    
+    func setupStackView() {
+        let stackView = UIStackView(arrangedSubviews: [segmentedControl, tableView])
+        stackView.distribution = .equalSpacing
+        stackView.axis = .vertical
+        stackView.spacing = 5
+        view.addSubview(stackView)
+        stackView.anchor(top: view.safeAreaLayoutGuide.topAnchor, left: view.rightAnchor, bottom: view.bottomAnchor, right: view.rightAnchor, paddingTop: 15, paddingLeft: 5, paddingBottom: 15, paddingRight: 10, width: view.frame.width, height: view.frame.height, enableInsets: false)
+    }
     
     func setupTableView() {
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MoviesCell")
+        tableView.register(TableViewCell.self, forCellReuseIdentifier: "MoviesCell")
         view.addSubview(tableView)
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        tableView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        tableView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
     }
 
+    func setupSegmentedControl() {
+        segmentedControl.selectedSegmentIndex =  0
+        
+        let frame = UIScreen.main.bounds
+        segmentedControl.frame = CGRect(x: frame.minX + 10, y: frame.minY + 50, width: frame.width - 20, height: frame.height*0.05)
+        
+        segmentedControl.layer.cornerRadius = 5.0
+        
+        segmentedControl.addTarget(self, action: #selector(self.switchMovieList(_:)), for: .valueChanged)
+        self.view.addSubview(segmentedControl)
+    }
+    
+    @objc func switchMovieList(_ sender: UISegmentedControl)
+    {
+        switch sender.selectedSegmentIndex
+        {
+        case 0:
+            viewModel.request.resourceURL = URL(string: viewModel.request.resourceStringPopular) ?? URL(string: "")!
+        case 1:
+            viewModel.request.resourceURL = URL(string: viewModel.request.resourceStringUpcoming) ?? URL(string: "")!
+        case 2:
+            viewModel.request.resourceURL = URL(string: viewModel.request.resourceStringTopRated) ?? URL(string: "")!
+        case 3:
+            viewModel.request.resourceURL = URL(string: viewModel.request.resourceStringNowPlaying) ?? URL(string: "")!
+        default:
+            break
+        }
+        fetchData()
+        tableView.reloadData()
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         print("Table View Rows =", viewModel.listOfMovies.count)
         return viewModel.listOfMovies.count
@@ -84,13 +132,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         UserDefaults.standard.set(movie.release_date, forKey: "MovieDetailReleaseDate")
         UserDefaults.standard.set(movie.overview, forKey: "MovieDetailOverview")
         UserDefaults.standard.set(urlImage, forKey: "MovieDetailPosterUrl")
-        //UserDefaults.standard.set(false, forKey: "MovieFavoriteAction")
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int
-    {
-        return 1
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UIScreen.main.bounds.height*0.25
     }
-    
 }
 

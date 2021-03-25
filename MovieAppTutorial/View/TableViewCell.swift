@@ -9,8 +9,6 @@ import UIKit
 
 class TableViewCell: UITableViewCell
 {
-    let viewController = ViewController()
-    
     let moviePoster: UIImageView = {
         let imgView = UIImageView()
         imgView.contentMode  = .scaleAspectFit
@@ -18,9 +16,20 @@ class TableViewCell: UITableViewCell
         return imgView
     }()
     
-    let movieTitle = UILabel()
+    let movieTitle: UILabel = {
+        let updatedLabel = UILabel()
+        updatedLabel.numberOfLines = 2
+        updatedLabel.font = UIFont(name: "Ubuntu", size: 12)
+        return updatedLabel
+    }()
+    
     let movieReleaseDate = UILabel()
-    let movieSummary = UILabel()
+    
+    let movieSummary: UILabel = {
+        let updatedLabel = UILabel()
+        updatedLabel.numberOfLines = 5
+        return updatedLabel
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -29,30 +38,13 @@ class TableViewCell: UITableViewCell
         addSubview(movieReleaseDate)
         addSubview(movieSummary)
         
-        moviePoster.topAnchor.constraint(equalTo: viewController.tableView.topAnchor).isActive = true
-        moviePoster.bottomAnchor.constraint(equalTo: viewController.tableView.bottomAnchor).isActive = true
-        moviePoster.leftAnchor.constraint(equalTo: viewController.tableView.leftAnchor).isActive = true
-        moviePoster.rightAnchor.constraint(equalTo: viewController.tableView.rightAnchor).isActive = true
+        moviePoster.anchor(top: topAnchor, left: leftAnchor, bottom: bottomAnchor, right: nil, paddingTop: 0, paddingLeft: 5, paddingBottom: 5, paddingRight: 0, width: 90, height: 0, enableInsets: false)
         
-        movieTitle.topAnchor.constraint(equalTo: viewController.tableView.topAnchor).isActive = true
-        movieTitle.bottomAnchor.constraint(equalTo: movieReleaseDate.bottomAnchor).isActive = true
-        movieTitle.leftAnchor.constraint(equalTo: moviePoster.leftAnchor).isActive = true
-        movieTitle.rightAnchor.constraint(equalTo: viewController.tableView.rightAnchor).isActive = true
+        movieTitle.anchor(top: topAnchor, left: moviePoster.rightAnchor, bottom: nil, right: nil, paddingTop: 20, paddingLeft: 50, paddingBottom: 5, paddingRight: 0, width: frame.size.width / 1.6, height: 0, enableInsets: false)
         
-        movieReleaseDate.topAnchor.constraint(equalTo: movieTitle.topAnchor).isActive = true
-        movieReleaseDate.bottomAnchor.constraint(equalTo: movieSummary.bottomAnchor).isActive = true
-        movieReleaseDate.leftAnchor.constraint(equalTo: moviePoster.leftAnchor).isActive = true
-        movieReleaseDate.rightAnchor.constraint(equalTo: viewController.tableView.rightAnchor).isActive = true
+        movieReleaseDate.anchor(top: movieTitle.bottomAnchor, left: moviePoster.rightAnchor, bottom: nil, right: nil, paddingTop: 5, paddingLeft: 50, paddingBottom: 0, paddingRight: 0, width: frame.size.width / 2, height: 0, enableInsets: false)
         
-        movieSummary.topAnchor.constraint(equalTo: movieReleaseDate.topAnchor).isActive = true
-        movieSummary.bottomAnchor.constraint(equalTo: viewController.tableView.bottomAnchor).isActive = true
-        movieSummary.leftAnchor.constraint(equalTo: moviePoster.leftAnchor).isActive = true
-        movieSummary.rightAnchor.constraint(equalTo: viewController.tableView.rightAnchor).isActive = true
-        
-//        moviePoster.topAnchor
-//        moviePoster.translatesAutoresizingMaskIntoConstraints = true
-//        moviePoster.center = CGPoint(x: moviePoster.bounds.midX, y: moviePoster.bounds.midY)
-//        moviePoster.autoresizingMask = [UIView.AutoresizingMask.flexibleRightMargin, UIView.AutoresizingMask.flexibleTopMargin, UIView.AutoresizingMask.flexibleBottomMargin]
+        movieSummary.anchor(top: movieReleaseDate.bottomAnchor, left: moviePoster.rightAnchor, bottom: nil, right: nil, paddingTop: 5, paddingLeft: 50, paddingBottom: 5, paddingRight: 0, width: frame.size.width / 1.6, height: 0, enableInsets: false)
     }
     
     required init?(coder: NSCoder) {
