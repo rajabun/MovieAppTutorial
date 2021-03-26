@@ -18,6 +18,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return segmentedControl
     }()
     
+    var selectedIndex = -1
+    var isCollapse = false
+    
     override func loadView() {
         super.loadView()
         setupTableView()
@@ -125,17 +128,42 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
     {
-        let movie = viewModel.listOfMovies[indexPath.row]
-        let urlImage = URL(string: "https://image.tmdb.org/t/p/w500\(movie.poster_path)")
-        
-        UserDefaults.standard.set(movie.title, forKey: "MovieDetailTitle")
-        UserDefaults.standard.set(movie.release_date, forKey: "MovieDetailReleaseDate")
-        UserDefaults.standard.set(movie.overview, forKey: "MovieDetailOverview")
-        UserDefaults.standard.set(urlImage, forKey: "MovieDetailPosterUrl")
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MoviesCell", for: indexPath) as? TableViewCell
+        tableView.deselectRow(at: indexPath, animated: true)
+        if selectedIndex == indexPath.row
+        {
+            if self.isCollapse == false
+            {
+                print("KEBUKA NIH")
+                cell?.movieSummary.numberOfLines = 20
+                self.isCollapse = true
+            }
+            else
+            {
+                print("KETUTUP NIH")
+                cell?.movieSummary.numberOfLines = 5
+                self.isCollapse = false
+            }
+        }
+        else
+        {
+            print("KLIK PERTAMA NIH")
+            cell?.movieSummary.numberOfLines = 20
+            self.isCollapse = true
+        }
+        self.selectedIndex  = indexPath.row
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UIScreen.main.bounds.height*0.25
+        if self.selectedIndex == indexPath.row && isCollapse == true
+        {
+            return UIScreen.main.bounds.height*0.75
+        }
+        else
+        {
+            return UIScreen.main.bounds.height*0.25
+        }
     }
 }
 
